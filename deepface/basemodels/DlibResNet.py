@@ -1,6 +1,7 @@
 import os
 import bz2
 import gdown
+import requests
 import numpy as np
 from deepface.commons import functions
 from deepface.commons.logger import Logger
@@ -9,6 +10,14 @@ logger = Logger(module="basemodels.DlibResNet")
 
 # pylint: disable=too-few-public-methods
 
+def download_file(url, output_file):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(output_file, 'wb') as file:
+            file.write(response.content)
+        print(f"File downloaded to {output_file}")
+    else:
+        print(f"Failed to download file. Status code: {response.status_code}")
 
 class DlibResNet:
     def __init__(self):
@@ -32,7 +41,8 @@ class DlibResNet:
             file_name = "dlib_face_recognition_resnet_model_v1.dat.bz2"
             url = f"http://dlib.net/files/{file_name}"
             output = f"{home}/.deepface/weights/{file_name}"
-            gdown.download(url, output, quiet=False)
+            # gdown.download(url, output, quiet=False)
+            download_file(url, output)
 
             zipfile = bz2.BZ2File(output)
             data = zipfile.read()
